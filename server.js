@@ -11,8 +11,8 @@ app.use(express.json());
 // Serve static files
 app.use(express.static(__dirname));
 
-// MongoDB connection
-mongoose.connect("mongodb://127.0.0.1:27017/portfolioDB")
+// ❗ IMPORTANT: MongoDB (Render cannot use localhost)
+mongoose.connect("mongodb+srv://YOUR_USERNAME:YOUR_PASSWORD@cluster0.mongodb.net/portfolioDB")
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log(err));
 
@@ -25,22 +25,17 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model("Contact", contactSchema);
 
-// Routes
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
-});
-
+// Route
 app.post("/save", async (req, res) => {
     try {
-        const data = new Contact(req.body);
-        await data.save();
-        res.send("Message saved successfully!");
-    } catch (err) {
+        const newContact = new Contact(req.body);
+        await newContact.save();
+        res.send("Data saved successfully");
+    } catch (error) {
         res.send("Error saving data");
     }
 });
 
 // Start server
-app.listen(5000, () => {
-    console.log("Server running at http://localhost:5000");
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log("Server running"));
